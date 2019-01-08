@@ -148,7 +148,8 @@ if __name__ == '__main__':
     import logging
     from gi.repository import GLib
 
-    line_number = 10
+    # line_number = 5
+    line_number = 7
 
     output_file = 'main.pdf'
     input_file = 'main.tex'
