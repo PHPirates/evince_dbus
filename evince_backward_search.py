@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/python
 
 
 # File from https://github.com/gauteh/vim-evince-synctex/blob/master/bin/evince_backward_search
@@ -23,7 +23,11 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 # Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import dbus, subprocess, time, re, urllib2
+import dbus
+import re
+import subprocess
+import urllib
+import urllib.parse
 
 RUNNING, CLOSED = range(2)
 
@@ -109,26 +113,26 @@ class EvinceWindowProxy:
                 self._log.debug("GetWindowList returned empty list")
 
     def on_sync_source(self, input_file, source_link, timestamp):
-        print
-        input_file + ":" + str(source_link[0])
-        cmd = re.sub("%f", '"' + urllib2.unquote(input_file.split("file://")[1]) + '"', self.editor)
+        print(input_file + ":" + str(source_link[0]))
+        cmd = re.sub("%f", '"' + urllib.parse.unquote(input_file.split("file://")[1]) + '"', self.editor)
         cmd = re.sub("%l", str(source_link[0]), cmd)
-        print
-        cmd
+        print(cmd)
         subprocess.call(cmd, shell=True)
         if self.source_handler is not None:
             self.source_handler(input_file, source_link)
 
 
-## This file offers backward search in any editor.
-##  evince_dbus  pdf_file  line_source input_file
+# This file offers backward search in any editor.
+#  evince_dbus  pdf_file  line_source input_file
 if __name__ == '__main__':
-    import dbus.mainloop.glib, gobject, glib, sys, os
+    import dbus.mainloop.glib
+    from gi.repository import GObject
+    import sys
+    import os
 
 
     def print_usage():
-        print
-        """Usage: 
+        print("""Usage: 
   evince_backward_search pdf_file "editorcmd %f %l"'
     %f ... TeX-file to load
     %l ... line to jump to
@@ -138,7 +142,7 @@ E.g.:
   evince_backward_search somepdf.pdf "scite %f '-goto:%l'"
   evince_backward_search somepdf.pdf "lyxclient -g %f %l"
   evince_backward_search somepdf.pdf "kate --use --line %l"
-  evince_backward_search somepdf.pdf "kile --line %l" """
+  evince_backward_search somepdf.pdf "kile --line %l" """)
         sys.exit(1)
 
 
@@ -151,8 +155,8 @@ E.g.:
         print_usage()
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    a = EvinceWindowProxy('file://' + urllib2.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), sys.argv[2], True)
+    a = EvinceWindowProxy('file://' + urllib.parse.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), sys.argv[2], True)
 
-    loop = gobject.MainLoop()
+    loop = GObject.MainLoop()
     loop.run()
     # ex:ts=4:et:
