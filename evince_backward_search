@@ -124,9 +124,10 @@ class EvinceWindowProxy:
 
 # This file offers backward search in any editor.
 #  evince_dbus  pdf_file  line_source input_file
+# ./evince_backward_search 'main.pdf' "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line %l %f"
 if __name__ == '__main__':
     import dbus.mainloop.glib
-    from gi.repository import GObject
+    from gi.repository import GLib
     import sys
     import os
 
@@ -157,6 +158,6 @@ E.g.:
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     a = EvinceWindowProxy('file://' + urllib.parse.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), sys.argv[2], True)
 
-    loop = GObject.MainLoop()
+    loop = GLib.MainLoop()
     loop.run()
     # ex:ts=4:et:
