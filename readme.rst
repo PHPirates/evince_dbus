@@ -18,12 +18,4 @@ Forward search example
 ----------------------
 * Execute ``evince_dbus.py`` with Python, the line number (in the ``.tex`` file) and filenames are hard-coded in the main function.
 * Evince should open and highlight the right line in the pdf file.
-
-<!-- todo test minimal example -->
-
-
-Notes
------
-
-PyCharm inverse search:
-``~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line 10 ~/GitRepos/evince_dbus/main.tex``
+* ``evince_forward_search_minimal`` is a much more minimal file which executes forward search exactly once and then quits.
