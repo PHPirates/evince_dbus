@@ -19,7 +19,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 # Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import dbus, subprocess, time
+import dbus
 
 RUNNING, CLOSED = range(2)
 
@@ -119,7 +119,7 @@ class EvinceWindowProxy:
     def SyncView(self, input_file, data, time):
         if self.status == CLOSED:
             if self.spawn:
-                self._tmp_syncview = [input_file, data, time];
+                self._tmp_syncview = [input_file, data, time]
                 self._handler = self._syncview_handler
                 self._get_dbus_name(True)
         else:
@@ -137,35 +137,23 @@ class EvinceWindowProxy:
         return True
 
 
-## This file can be used as a script to support forward search and backward search in vim.
-## It should be easy to adapt to other editors.
-##  evince_dbus  pdf_file  line_source input_file
+# This file can be used as a script to support forward search and backward search in vim.
+# It should be easy to adapt to other editors.
+# The usage is
+#  evince_dbus output_file line_number input_file
+# from the directory of output_file.
 if __name__ == '__main__':
-    import dbus.mainloop.glib, sys, os, logging
+    import dbus.mainloop.glib
+    import os
+    import logging
     from gi.repository import GObject
 
+    line_number = 5
 
-    def print_usage():
-        print('''
-The usage is evince_dbus output_file line_number input_file from the directory of output_file.
-''')
-        sys.exit(1)
-
-
-    if len(sys.argv) != 4:
-        print_usage()
-    try:
-        line_number = int(sys.argv[2])
-    except ValueError:
-        print_usage()
-
-    output_file = sys.argv[1]
-    input_file = sys.argv[3]
+    output_file = 'main.pdf'
+    input_file = 'main.tex'
     path_output = os.getcwd() + '/' + output_file
     path_input = os.getcwd() + '/' + input_file
-
-    if not os.path.isfile(path_output):
-        print_usage()
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     logger = logging.getLogger("evince_dbus")
@@ -184,6 +172,7 @@ The usage is evince_dbus output_file line_number input_file from the directory o
     def sync_view(ev_window, path_input, line_number):
         ev_window.SyncView(path_input, (line_number, 1), 0)
 
+    sync_view(a, path_input, line_number)
 
     GObject.timeout_add(400, sync_view, a, path_input, line_number)
     loop = GObject.MainLoop()
