@@ -1,9 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/python2
+
+
+# File from https://github.com/gauteh/vim-evince-synctex/blob/master/bin/evince_backward_search
+
+
 # -*- coding: utf-8 -*-
 
-# This file is part of the Gedit Synctex plugin.
-#
 # Copyright (C) 2010 Jose Aliste <jose.aliste@gmail.com>
+#               2011 Benjamin Kellermann <Benjamin.Kellermann@tu-dresden.de>
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of the GNU General Public Licence as published by the Free Software
@@ -19,7 +23,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 # Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import dbus
+import dbus, subprocess, time, re, urllib2
 
 RUNNING, CLOSED = range(2)
 
@@ -38,10 +42,10 @@ class EvinceWindowProxy:
     daemon = None
     bus = None
 
-    def __init__(self, uri, spawn=False, logger=None):
+    def __init__(self, uri, editor, spawn=False, logger=None):
         self._log = logger
         self.uri = uri
-        self.spawn = spawn
+        self.editor = editor
         self.status = CLOSED
         self.source_handler = None
         self.dbus_name = ''
@@ -98,83 +102,57 @@ class EvinceWindowProxy:
         if len(window_list) > 0:
             window_obj = EvinceWindowProxy.bus.get_object(self.dbus_name, window_list[0])
             self.window = dbus.Interface(window_obj, EV_WINDOW_IFACE)
-            self.window.connect_to_signal("Closed", self.on_window_close)
             self.window.connect_to_signal("SyncSource", self.on_sync_source)
         else:
             # That should never happen.
             if self._log:
                 self._log.debug("GetWindowList returned empty list")
 
-    def set_source_handler(self, source_handler):
-        self.source_handler = source_handler
-
-    def on_window_close(self):
-        self.window = None
-        self.status = CLOSED
-
     def on_sync_source(self, input_file, source_link, timestamp):
+        print
+        input_file + ":" + str(source_link[0])
+        cmd = re.sub("%f", '"' + urllib2.unquote(input_file.split("file://")[1]) + '"', self.editor)
+        cmd = re.sub("%l", str(source_link[0]), cmd)
+        print
+        cmd
+        subprocess.call(cmd, shell=True)
         if self.source_handler is not None:
-            self.source_handler(input_file, source_link, timestamp)
-
-    def SyncView(self, input_file, data, time):
-        if self.status == CLOSED:
-            if self.spawn:
-                self._tmp_syncview = [input_file, data, time]
-                self._handler = self._syncview_handler
-                self._get_dbus_name(True)
-        else:
-            self.window.SyncView(input_file, data, time, dbus_interface="org.gnome.evince.Window")
-
-    def _syncview_handler(self, window_list):
-        self.handle_get_window_list_reply(window_list)
-
-        if self.status == CLOSED:
-            return False
-        self.window.SyncView(self._tmp_syncview[0], self._tmp_syncview[1], self._tmp_syncview[2],
-                             dbus_interface="org.gnome.evince.Window")
-        del self._tmp_syncview
-        self._handler = None
-        return True
+            self.source_handler(input_file, source_link)
 
 
-# This file can be used as a script to support forward search and backward search in vim.
-# It should be easy to adapt to other editors.
-# The usage is
-#  evince_dbus output_file line_number input_file
-# from the directory of output_file.
+## This file offers backward search in any editor.
+##  evince_dbus  pdf_file  line_source input_file
 if __name__ == '__main__':
-    import dbus.mainloop.glib
-    import os
-    import logging
-    from gi.repository import GLib
+    import dbus.mainloop.glib, gobject, glib, sys, os
 
-    line_number = 10
 
-    output_file = 'main.pdf'
-    input_file = 'main.tex'
-    path_output = os.getcwd() + '/' + output_file
-    path_input = os.getcwd() + '/' + input_file
+    def print_usage():
+        print
+        """Usage: 
+  evince_backward_search pdf_file "editorcmd %f %l"'
+    %f ... TeX-file to load
+    %l ... line to jump to
+E.g.:
+  evince_backward_search somepdf.pdf "gvim --servername somepdf --remote-silent '+%l<Enter>' %f"
+  evince_backward_search somepdf.pdf "emacsclient -a emacs --no-wait +%l %f"
+  evince_backward_search somepdf.pdf "scite %f '-goto:%l'"
+  evince_backward_search somepdf.pdf "lyxclient -g %f %l"
+  evince_backward_search somepdf.pdf "kate --use --line %l"
+  evince_backward_search somepdf.pdf "kile --line %l" """
+        sys.exit(1)
+
+
+    if len(sys.argv) != 3:
+        print_usage()
+
+    pdf_file = os.path.abspath(sys.argv[1])
+
+    if not os.path.isfile(pdf_file):
+        print_usage()
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    logger = logging.getLogger("evince_dbus")
-    logger.setLevel(logging.DEBUG)
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
+    a = EvinceWindowProxy('file://' + urllib2.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), sys.argv[2], True)
 
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-
-    ch.setFormatter(formatter)
-
-    logger.addHandler(ch)
-    a = EvinceWindowProxy('file://' + path_output, True, logger=logger)
-
-
-    def sync_view(ev_window, path_input, line_number):
-        ev_window.SyncView(path_input, (line_number, 1), 0)
-
-    sync_view(a, path_input, line_number)
-
-    GLib.timeout_add(400, sync_view, a, path_input, line_number)
-    loop = GLib.MainLoop()
+    loop = gobject.MainLoop()
     loop.run()
     # ex:ts=4:et:
