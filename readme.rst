@@ -1,6 +1,4 @@
-The file `evince_dbus.py <evince_dbus.py>`_ is a fork from the gedit synctex plugin file at https://github.com/GNOME/gedit-plugins/blob/master/plugins/synctex/synctex/evince_dbus.py.
-
-It aims to be an example of how to communicate with Evince using dbus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
+This repo contains some ready-to-run Python files which are examples of how to communicate with Evince using dbus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
 
 Requirements
 ------------
@@ -9,8 +7,7 @@ Requirements
 
 Backward search example
 -----------------------
-* For a backward search example, execute in a terminal
-``./evince_backward_search main.pdf "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line %l %f"`` of course changing the path to your PyCharm.
+* For a backward search example, change the path to your PyCharm executable in ``evince_backward_search.py`` and run the file.
 * While that is running, open ``main.pdf``.
 * Hold <kbd>Ctrl</kbd> and click in the document, then PyCharm should open ``main.tex`` and focus on the right line.
 
@@ -20,3 +17,12 @@ Forward search example
 * Evince should open and highlight the right line in the pdf file.
 * At the moment, when you re-execute when Evince is still open an error will be thrown, but it still works.
 * ``evince_forward_search_minimal`` is a much more minimal file which executes forward search exactly once and then quits.
+
+Sources
+-------
+
+The file `evince_dbus.py <evince_dbus.py>`_ is a fork from the gedit synctex plugin file at https://github.com/GNOME/gedit-plugins/blob/master/plugins/synctex/synctex/evince_dbus.py.
+
+The file `evince_backward_search.py <evince_backward_search.py>`_ is a fork from the file at https://github.com/gauteh/vim-evince-synctex/blob/master/bin/evince_backward_search
+
+The file `evince_forward_search_minimal.py <evince_forward_search_minimal.py>`_ is a fork from the file at File from https://github.com/ebranlard/evince-backward-forward-search/blob/master/evince_forward_search

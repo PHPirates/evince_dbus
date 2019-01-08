@@ -1,7 +1,4 @@
 #!/usr/bin/python
-
-# File from https://github.com/ebranlard/evince-backward-forward-search/blob/master/evince_forward_search
-
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2010 Jose Aliste <jose.aliste@gmail.com>

@@ -1,9 +1,4 @@
 #!/usr/bin/python
-
-
-# File from https://github.com/gauteh/vim-evince-synctex/blob/master/bin/evince_backward_search
-
-
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2010 Jose Aliste <jose.aliste@gmail.com>
@@ -23,11 +18,12 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51 Franklin
 # Street, Fifth Floor, Boston, MA  02110-1301, USA
 
-import dbus
 import re
 import subprocess
 import urllib
 import urllib.parse
+
+import dbus
 
 RUNNING, CLOSED = range(2)
 
@@ -123,40 +119,19 @@ class EvinceWindowProxy:
 
 
 # This file offers backward search in any editor.
-#  evince_dbus  pdf_file  line_source input_file
-# ./evince_backward_search 'main.pdf' "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line %l %f"
 if __name__ == '__main__':
     import dbus.mainloop.glib
     from gi.repository import GLib
-    import sys
     import os
 
+    # pdf file to watch
+    pdf_file = os.path.abspath('main.pdf')
 
-    def print_usage():
-        print("""Usage: 
-  evince_backward_search pdf_file "editorcmd %f %l"'
-    %f ... TeX-file to load
-    %l ... line to jump to
-E.g.:
-  evince_backward_search somepdf.pdf "gvim --servername somepdf --remote-silent '+%l<Enter>' %f"
-  evince_backward_search somepdf.pdf "emacsclient -a emacs --no-wait +%l %f"
-  evince_backward_search somepdf.pdf "scite %f '-goto:%l'"
-  evince_backward_search somepdf.pdf "lyxclient -g %f %l"
-  evince_backward_search somepdf.pdf "kate --use --line %l"
-  evince_backward_search somepdf.pdf "kile --line %l" """)
-        sys.exit(1)
-
-
-    if len(sys.argv) != 3:
-        print_usage()
-
-    pdf_file = os.path.abspath(sys.argv[1])
-
-    if not os.path.isfile(pdf_file):
-        print_usage()
+    # Command to execute for backward search, where %f is the tex file to load and %l is the line number
+    command = "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line %l %f"
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
-    a = EvinceWindowProxy('file://' + urllib.parse.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), sys.argv[2], True)
+    a = EvinceWindowProxy('file://' + urllib.parse.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), command, True)
 
     loop = GLib.MainLoop()
     loop.run()
