@@ -128,7 +128,7 @@ if __name__ == '__main__':
     pdf_file = os.path.abspath('main.pdf')
 
     # Command to execute for backward search, where %f is the tex file to load and %l is the line number
-    command = "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.4886.43/bin/pycharm.sh --line %l %f"
+    command = "~/.local/share/JetBrains/Toolbox/apps/PyCharm-P/ch-0/183.5153.39/bin/pycharm.sh --line %l %f"
 
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
     a = EvinceWindowProxy('file://' + urllib.parse.quote(pdf_file, safe="%/:=&?~#+!$,;'@()*[]"), command, True)
