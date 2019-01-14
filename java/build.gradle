@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+
+    // Plugin which can update Gradle dependencies, use help/useLatestVersions
+    id 'se.patrikerdes.use-latest-versions' version '0.2.3'
+    id 'com.github.ben-manes.versions' version '0.20.0'
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+dependencies {
+
+}
+
+sourceSets {
+    main.java.srcDirs += 'src'
+    main.resources.srcDirs += 'src'
+    test.java.srcDirs += 'test'
+    test.resources.srcDirs += 'test'
+}
+
+// Java target version
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
