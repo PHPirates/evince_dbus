@@ -1,3 +1,7 @@
+Python
+======
+
+
 This repo contains some ready-to-run Python files which are minimal examples of how to communicate with Evince using dbus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
 
 Requirements
@@ -6,14 +10,16 @@ Requirements
 * Install PyGObject using instructions from https://pygobject.readthedocs.io/en/latest/getting_started.html (tested on Arch Linux)
 
 Backward search minimal example
------------------------
+-------------------------------
+
 * For a backward search example, change the path to your PyCharm executable in ``evince_backward_search_minimal.py`` and run the file.
 * While that is running, open ``main.pdf`` if is not already opened.
 * Hold Ctrl and click in the document, then PyCharm should open ``main.tex`` and focus on the right line.
 * For the original (longer) example, see ``evince_backward_search.py``.
 
 Forward search minimal example
-----------------------
+------------------------------
+
 * Execute ``evince_forward_search_minimal.py`` with Python, the line number (in the ``.tex`` file) and filenames are hard-coded.
 * Evince should open and highlight the right line in the pdf file.
 * At the moment, when you re-execute when Evince is still open an error will be thrown, but it still works.
