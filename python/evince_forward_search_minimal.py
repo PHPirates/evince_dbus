@@ -29,8 +29,14 @@ pdf_file = os.getcwd() + '/' + 'main.pdf'
 tex_file = os.getcwd() + '/' + 'main.tex'
 
 try:
+    # Initialize a session bus
     bus = dbus.SessionBus()
+    # Get a reference to the evince daemon object
     daemon = bus.get_object('org.gnome.evince.Daemon', '/org/gnome/evince/Daemon')
+    # findDocument is a method provided by Evince on the dbus, see
+    # https://mail.gnome.org/archives/commits-list/2010-July/msg02054.html
+    # "It returns the name owner of the evince process for the given document
+    #  URI."
     dbus_name = daemon.FindDocument('file://' + pdf_file, True, dbus_interface="org.gnome.evince.Daemon")
     window = bus.get_object(dbus_name, '/org/gnome/evince/Window/0')
     window.SyncView(tex_file, (line_number, 1), 0, dbus_interface="org.gnome.evince.Window")
