@@ -58,3 +58,11 @@ Working with dbus
 
 If you get a DBusExecutionException, you can see in the stacktrace that it's probably thrown in ``AbstractConnection.java``, if you break there you'll see the actual exception which is caught there.
 For example in my case I saw a NoSuchMethodException because it was searching in the wrong Interface (org.freedesktop.dbus.interfaces.Introspectable instead of org.gnome.evince.Daemon).
+
+Executing methods exported on the dbus
+--------------------------------------
+
+So suppose you have found a method exported on the dbus, for example ``FindDocument`` under the interface name ``org.gnome.evince.Deamon``.
+Then in order to call it, you should create a Java interface called ``Daemon`` in the package ``org.gnome.evince``.
+In the interface you should declare the methods you want to use, with the right signature.
+Then you can get the object with ``Daemon interfaceDaemon = connection.getRemoteObject("org.gnome.evince.Daemon", "/org/gnome/evince/Deamon", Daemon.class);`` and you can call the method with ``String owner = interfaceDaemon.FindDocument(pdfFile, true);``.

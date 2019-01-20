@@ -1,18 +1,16 @@
 package nl.deltadak.evincedbus;
 
-import org.freedesktop.dbus.DBusAsyncReply;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.interfaces.CallbackHandler;
-import org.freedesktop.dbus.interfaces.DBusInterface;
-import org.freedesktop.dbus.connections.BusAddress;
-import org.freedesktop.DBus;
 import org.freedesktop.dbus.interfaces.Introspectable;
+import org.gnome.evince.Daemon;
 
 /**
  * Provides forward search for Evince: sync Evince with the source.
  */
+@SuppressWarnings({"CloneDetection", "LawOfDemeter"})
 public class ForwardSearch {
 
     String evinceDaemonPath = "/org/gnome/evince/Daemon";
@@ -27,7 +25,8 @@ public class ForwardSearch {
 
     void forwardSearch() {
 
-        String pdfFile = "main.pdf";
+        String workDir = System.getProperty("user.dir");
+        String pdfFile = workDir + "/main.pdf";
         String texFile = "main.tex";
         int lineNumber = 5;
 
@@ -43,22 +42,29 @@ public class ForwardSearch {
             // We are using D-Bus with a message bus daemon
             // https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase2.html#x9-130002
             // This gets a reference to the “/Test” object on the process with the name “foo.bar.Test” . The object implements the Introspectable interface, and calls may be made to methods in that interface as if it was a local object.
-            Introspectable interfaceDaemonObject = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Introspectable.class);
+            Introspectable introspectable = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Introspectable.class);
             // Now we will get xml data with all available methods, especially those under the org.gnome.evince.Daemon are of interest for us.
-            String data = interfaceDaemonObject.Introspect();
+            String data = introspectable.Introspect();
             System.out.println(data);
 
+            // Now the same, but to get the right object (for executing FindDocument)
+            Daemon interfaceDaemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Daemon.class);
+            String owner = interfaceDaemon.FindDocument(pdfFile, true);
+            System.out.println("Owner: " + owner);
+
+            // todo this can be removed?
             // Now we have the evince daemon object, we want to call a method on it.
             // We want to do this asynchronously so we don't have to wait for a reply.
             // Execute FindDocument via daemon interface
-            CallbackHandler<Object> callback = new CallBackExample();
-            connection.callWithCallback(interfaceDaemonObject, "FindDocument", callback, pdfFile, true);
+//            CallbackHandler<Object> callback = new CallBackExample();
+//            connection.callWithCallback(introspectable, "FindDocument", callback, pdfFile, true);
 
+            // todo now the same but for the SyncView method
+            // todo find signature of SyncView
+            // search in Evince source for documentation, in order to find signature? (we already have the paths)
+//            Introspectable interfaceWindowObject = connection.getRemoteObject(evinceWindowInterface, evinceWindowPath, Introspectable.class);
 
-
-            Introspectable interfaceWindowObject = connection.getRemoteObject(evinceWindowInterface, evinceWindowPath, Introspectable.class);
-
-            connection.callWithCallback(interfaceWindowObject, "SyncView", callback, texFile, lineNumber, 0, evinceWindowInterface);
+//            connection.callWithCallback(interfaceWindowObject, "SyncView", callback, texFile, lineNumber, 0, evinceWindowInterface);
 
 
         } catch (DBusException e) {
