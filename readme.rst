@@ -2,7 +2,7 @@ Python
 ======
 
 
-This repo contains some ready-to-run Python files which are minimal examples of how to communicate with Evince using dbus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
+This repo contains some ready-to-run Python files which are minimal examples of how to communicate with Evince using D-Bus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
 
 Requirements
 ------------
@@ -38,8 +38,8 @@ The file `evince_forward_search_minimal.py <evince_forward_search_minimal.py>`_ 
 DBus Documentation: d-feet
 ==========================
 
-In this case it was not documented which methods were exported by Evince to the dbus.
-Fortunately, it is possible to inspect what methods are available using the Gnome d-feet program or actually connecting with dbus directly with some code.
+In this case it was not documented which methods were exported by Evince to the D-Bus.
+Fortunately, it is possible to inspect what methods are available using the Gnome d-feet program or actually connecting with D-Bus directly with some code.
 First d-feet.
 On Ubuntu you can install it with ``sudo apt-get install d-feet``, on Arch Linux I did the following.
 
@@ -53,16 +53,36 @@ Now under Session Bus, type evince and you'll see under the  ``/org/gnome/evince
 
 As for the code (Java, in this case), see https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase2.html#x9-130002 and also the forward search example in this repo.
 
-Working with dbus
+Working with D-Bus
 ------------------
 
 If you get a DBusExecutionException, you can see in the stacktrace that it's probably thrown in ``AbstractConnection.java``, if you break there you'll see the actual exception which is caught there.
 For example in my case I saw a NoSuchMethodException because it was searching in the wrong Interface (org.freedesktop.dbus.interfaces.Introspectable instead of org.gnome.evince.Daemon).
 
-Executing methods exported on the dbus
+Executing methods exported on the D-Bus
 --------------------------------------
 
-So suppose you have found a method exported on the dbus, for example ``FindDocument`` under the interface name ``org.gnome.evince.Deamon``.
+So suppose you have found a method exported on the D-Bus, for example ``FindDocument`` under the interface name ``org.gnome.evince.Deamon``.
 Then in order to call it, you should create a Java interface called ``Daemon`` in the package ``org.gnome.evince``.
 In the interface you should declare the methods you want to use, with the right signature.
 Then you can get the object with ``Daemon interfaceDaemon = connection.getRemoteObject("org.gnome.evince.Daemon", "/org/gnome/evince/Deamon", Daemon.class);`` and you can call the method with ``String owner = interfaceDaemon.FindDocument(pdfFile, true);``.
+
+
+Now the remaining challenge is to find the interface name and method signatures of other methods you want to call but which you can't find in d-feet.
+I just searched in the source of Evince and found `D-Bus API <https://dbus.freedesktop.org/doc/dbus-api-design.html>`_ XML files, for example https://github.com/GNOME/evince/blob/master/shell/ev-gdbus.xml when searching for SyncView. This is the same xml data which you can get using introspection (as mentioned before). Example:
+
+.. code-block:: xml
+
+    <interface name='org.gnome.evince.Window'>
+        <method name='SyncView'>
+          <arg type='s' name='source_file' direction='in'/>
+          <arg type='(ii)' name='source_point' direction='in'/>
+          <arg type='u' name='timestamp' direction='in'/>
+        </method>
+    </interface>
+
+In order to find out what these argument types are you can look in the D-Bus specification at https://dbus.freedesktop.org/doc/dbus-specification.html#type-system.
+In the example, 's' is a String, 'u' an unsigned 32-bit integer which can be represented by a Java ``int``, and '(ii)' is a block of values containing two ints (actually signed two's complement 32-bit integers). The brackets indicated they appear together in a struct, which can be represented in Python with a tuple (apparently), although it remains to be seen what data structure will work in Java.
+Possibly an ``org.freedesktop.dbus.Tuple`` may help, as seen at https://www.programcreek.com/java-api-examples/index.php?source_dir=dbus-java-master/src/test/java/org/freedesktop/dbus/test/TestTuple.java#.
+
+.. todo update tuple thing ^

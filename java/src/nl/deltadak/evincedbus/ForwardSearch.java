@@ -45,12 +45,16 @@ public class ForwardSearch {
             Introspectable introspectable = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Introspectable.class);
             // Now we will get xml data with all available methods, especially those under the org.gnome.evince.Daemon are of interest for us.
             String data = introspectable.Introspect();
-            System.out.println(data);
+//            System.out.println(data);
 
             // Now the same, but to get the right object (for executing FindDocument)
-            Daemon interfaceDaemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Daemon.class);
-            String owner = interfaceDaemon.FindDocument(pdfFile, true);
-            System.out.println("Owner: " + owner);
+            // Daemon is the interface we have declared ourselves, see the org.gnome.evince package
+            Daemon daemon = connection.getRemoteObject("org.gnome.evince.Daemon", "/org/gnome/evince/Daemon", Daemon.class);
+            String dbusName = daemon.FindDocument("file://" + pdfFile, true);
+            // Will be something like :1.155
+            System.out.println("Owner: " + dbusName);
+
+
 
             // todo this can be removed?
             // Now we have the evince daemon object, we want to call a method on it.

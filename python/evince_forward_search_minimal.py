@@ -37,7 +37,8 @@ try:
     # https://mail.gnome.org/archives/commits-list/2010-July/msg02054.html
     # "It returns the name owner of the evince process for the given document
     #  URI."
-    dbus_name = daemon.FindDocument('file://' + pdf_file, True, dbus_interface="org.gnome.evince.Daemon")
+    dbus_name: str = daemon.FindDocument('file://' + pdf_file, True, dbus_interface="org.gnome.evince.Daemon")
+    print("evince process owner: " + dbus_name)  # Something like :1.149
     window = bus.get_object(dbus_name, '/org/gnome/evince/Window/0')
     window.SyncView(tex_file, (line_number, 1), 0, dbus_interface="org.gnome.evince.Window")
 except dbus.DBusException:
