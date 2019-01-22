@@ -46,10 +46,9 @@ public class ForwardSearch {
             // We are using D-Bus with a message bus daemon
             // https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase2.html#x9-130002
             // This gets a reference to the “/Test” object on the process with the name “foo.bar.Test” . The object implements the Introspectable interface, and calls may be made to methods in that interface as if it was a local object.
-            Introspectable introspectable = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Introspectable.class);
+            Introspectable introspectableDaemon = connection.getRemoteObject(evinceDaemonName, evinceDaemonPath, Introspectable.class);
             // Now we will get xml data with all available methods, especially those under the org.gnome.evince.Daemon are of interest for us.
-            String data = introspectable.Introspect();
-//            System.out.println(data);
+//            System.out.println(introspectableDaemon.Introspect());
 
             // Now the same, but to get the right object (for executing FindDocument)
             // Daemon is the interface we have declared ourselves, see the org.gnome.evince package
@@ -68,9 +67,19 @@ public class ForwardSearch {
 //            CallbackHandler<Object> callback = new CallBackExample();
 //            connection.callWithCallback(introspectable, "FindDocument", callback, pdfFile, true);
 
+            // Introspect the Window object to see method signatures
+            Introspectable introspectableWindow = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Introspectable.class);
+            System.out.println(introspectableWindow.Introspect());
+
             // Now we do the same but for the SyncView method
-            Window window = connection.getRemoteObject("org.gnome.evince.Window", "/org/gnome/evince/Window/0", Window.class);
-            // We have created our own tuple TwoTuple in order to pass a tuple to SyncView
+            // todo use interface name org.gnome.evince.Window somewhere?
+            // todo no reply. Check:
+            // dbusName is right name for introspection, the org.gnome.evince.Window doesn't help here and fails with introspection
+            // the object path is right for introspectino, other path without 0 doesn't work
+            // Struct is like example in docs
+            // Parameter types correspond exactly to xml, translated according to table in docs
+            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
+            // We have created our own tuple TwoTuple in order to pass a tuple/struct to SyncView
             Struct lineTuple = new TwoTuple(lineNumber, 1);
             window.SyncView(texFile, lineTuple, new UInt32(0));
 

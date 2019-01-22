@@ -1,15 +1,15 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2018.11.11)  8 JAN 2019 17:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex 2019.1.16)  22 JAN 2019 21:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
 **main.tex
 (./main.tex
-LaTeX2e <2018-04-01> patch level 5
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/article.cls
-Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
-(/usr/local/texlive/2018/texmf-dist/tex/latex/base/size10.clo
-File: size10.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+LaTeX2e <2018-12-01>
+(/home/thomas/texlive/2018/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2018/09/03 v1.4i Standard LaTeX document class
+(/home/thomas/texlive/2018/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2018/09/03 v1.4i Standard LaTeX file (size option)
 )
 \c@part=\count80
 \c@section=\count81
@@ -44,20 +44,20 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 
 [1
 
-{/usr/local/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+{/home/thomas/texlive/2018/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2] [3] (./main.aux) ) 
 Here is how much of TeX's memory you used:
- 203 strings out of 494002
- 2169 string characters out of 6160283
- 55539 words of memory out of 5000000
- 3963 multiletter control sequences out of 15000+600000
+ 203 strings out of 494562
+ 2177 string characters out of 6176942
+ 54635 words of memory out of 5000000
+ 3950 multiletter control sequences out of 15000+600000
  3640 words of font info for 14 fonts, out of 8000000 for 9000
- 350 hyphenation exceptions out of 8191
+ 14 hyphenation exceptions out of 8191
  23i,4n,17p,112b,107s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2018/texmf-dist/fonts/type1/public/am
-sfonts/cm/cmr10.pfb></usr/local/texlive/2018/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr7.pfb>
-Output written on main.pdf (3 pages, 21908 bytes).
+</home/thomas/texlive/2018/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></home/thomas/texlive/2018/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr7.pfb>
+Output written on main.pdf (3 pages, 21910 bytes).
 PDF statistics:
  22 PDF objects out of 1000 (max. 8388607)
  14 compressed objects within 1 object stream
