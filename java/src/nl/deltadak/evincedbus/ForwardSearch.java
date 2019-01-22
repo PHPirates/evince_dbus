@@ -1,11 +1,15 @@
 package nl.deltadak.evincedbus;
 
+import org.freedesktop.dbus.Struct;
+import org.freedesktop.dbus.Tuple;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.interfaces.CallbackHandler;
 import org.freedesktop.dbus.interfaces.Introspectable;
+import org.freedesktop.dbus.types.UInt32;
 import org.gnome.evince.Daemon;
+import org.gnome.evince.Window;
 
 /**
  * Provides forward search for Evince: sync Evince with the source.
@@ -27,8 +31,8 @@ public class ForwardSearch {
 
         String workDir = System.getProperty("user.dir");
         String pdfFile = workDir + "/main.pdf";
-        String texFile = "main.tex";
-        int lineNumber = 5;
+        String texFile = workDir + "/main.tex";
+        int lineNumber = 11;
 
 
         DBusConnection connection = null;
@@ -50,21 +54,26 @@ public class ForwardSearch {
             // Now the same, but to get the right object (for executing FindDocument)
             // Daemon is the interface we have declared ourselves, see the org.gnome.evince package
             Daemon daemon = connection.getRemoteObject("org.gnome.evince.Daemon", "/org/gnome/evince/Daemon", Daemon.class);
+            // We will find the process owner in order to use it for SyncView later on as busname
             String dbusName = daemon.FindDocument("file://" + pdfFile, true);
             // Will be something like :1.155
             System.out.println("Owner: " + dbusName);
 
 
 
-            // todo this can be removed?
+            // todo call methods asynchronously
             // Now we have the evince daemon object, we want to call a method on it.
             // We want to do this asynchronously so we don't have to wait for a reply.
             // Execute FindDocument via daemon interface
 //            CallbackHandler<Object> callback = new CallBackExample();
 //            connection.callWithCallback(introspectable, "FindDocument", callback, pdfFile, true);
 
-            // todo now the same but for the SyncView method
-            // todo find signature of SyncView
+            // Now we do the same but for the SyncView method
+            Window window = connection.getRemoteObject("org.gnome.evince.Window", "/org/gnome/evince/Window/0", Window.class);
+            // We have created our own tuple TwoTuple in order to pass a tuple to SyncView
+            Struct lineTuple = new TwoTuple(lineNumber, 1);
+            window.SyncView(texFile, lineTuple, new UInt32(0));
+
             // search in Evince source for documentation, in order to find signature? (we already have the paths)
 //            Introspectable interfaceWindowObject = connection.getRemoteObject(evinceWindowInterface, evinceWindowPath, Introspectable.class);
 

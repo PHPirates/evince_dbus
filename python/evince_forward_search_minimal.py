@@ -40,6 +40,7 @@ try:
     dbus_name: str = daemon.FindDocument('file://' + pdf_file, True, dbus_interface="org.gnome.evince.Daemon")
     print("evince process owner: " + dbus_name)  # Something like :1.149
     window = bus.get_object(dbus_name, '/org/gnome/evince/Window/0')
+    # Highlight a line in the pdf
     window.SyncView(tex_file, (line_number, 1), 0, dbus_interface="org.gnome.evince.Window")
 except dbus.DBusException:
     print_exc()

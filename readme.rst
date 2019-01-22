@@ -82,7 +82,6 @@ I just searched in the source of Evince and found `D-Bus API <https://dbus.freed
     </interface>
 
 In order to find out what these argument types are you can look in the D-Bus specification at https://dbus.freedesktop.org/doc/dbus-specification.html#type-system.
-In the example, 's' is a String, 'u' an unsigned 32-bit integer which can be represented by a Java ``int``, and '(ii)' is a block of values containing two ints (actually signed two's complement 32-bit integers). The brackets indicated they appear together in a struct, which can be represented in Python with a tuple (apparently), although it remains to be seen what data structure will work in Java.
-Possibly an ``org.freedesktop.dbus.Tuple`` may help, as seen at https://www.programcreek.com/java-api-examples/index.php?source_dir=dbus-java-master/src/test/java/org/freedesktop/dbus/test/TestTuple.java#.
+Regarding Java, in order to find out how to represent types in Java the dbus-java documentation at https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase7.html may help.
 
-.. todo update tuple thing ^
+In the example, 's' is a String, 'u' an unsigned 32-bit integer which can be represented in Java by a dbus-java type UInt32, and '(ii)' is a block of values containing two ints (in D-Bus they are signed two's complement 32-bit integers). The brackets indicated they appear together in a struct, which can be represented in Python with a tuple (apparently) and in Java with something that extends Struct.
