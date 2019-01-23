@@ -6,6 +6,7 @@ import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.interfaces.CallbackHandler;
+import org.freedesktop.dbus.interfaces.DBusInterface;
 import org.freedesktop.dbus.interfaces.Introspectable;
 import org.freedesktop.dbus.types.UInt32;
 import org.gnome.evince.Daemon;
@@ -72,22 +73,18 @@ public class ForwardSearch {
             System.out.println(introspectableWindow.Introspect());
 
             // Now we do the same but for the SyncView method
-            // todo use interface name org.gnome.evince.Window somewhere?
             // todo no reply. Check:
             // dbusName is right name for introspection, the org.gnome.evince.Window doesn't help here and fails with introspection
             // the object path is right for introspectino, other path without 0 doesn't work
+            // Interface name org.gnome.evince.Window is provided by the Window.class
             // Struct is like example in docs
             // Parameter types correspond exactly to xml, translated according to table in docs
+            // But: changing them to something insensible results in the same error
             Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
+
             // We have created our own tuple TwoTuple in order to pass a tuple/struct to SyncView
             Struct lineTuple = new TwoTuple(lineNumber, 1);
             window.SyncView(texFile, lineTuple, new UInt32(0));
-
-            // search in Evince source for documentation, in order to find signature? (we already have the paths)
-//            Introspectable interfaceWindowObject = connection.getRemoteObject(evinceWindowInterface, evinceWindowPath, Introspectable.class);
-
-//            connection.callWithCallback(interfaceWindowObject, "SyncView", callback, texFile, lineNumber, 0, evinceWindowInterface);
-
 
         } catch (DBusException e) {
             System.out.println("Caught DBusException: ");

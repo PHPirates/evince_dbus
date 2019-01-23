@@ -1,0 +1,1 @@
+gdbus call --session --dest :1.195 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "main.tex" "(11, 1)" "0"
