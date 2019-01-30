@@ -95,4 +95,4 @@ In this example, when you know the evince process owner (e.g. ``:1.195``) which 
     gdbus call --session --dest :1.195 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "main.tex" "(11, 1)" "0"
 
 In this case ``:1.195`` is the object name, like ``org.gnome.evince.Daemon`` was for FindDocument. You can view all names by executing ``qdbus`` and available object paths with ``qdbus :1.195`` where ``:1.195`` is an object name.
-You can also view available methods with ``qdbus :1.195 /org/gnome/evince/Window/``.
+You can also view available methods with ``qdbus :1.195 /org/gnome/evince/Window/0``.

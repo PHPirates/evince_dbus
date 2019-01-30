@@ -12,6 +12,13 @@ import org.freedesktop.dbus.types.UInt32;
 import org.gnome.evince.Daemon;
 import org.gnome.evince.Window;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import static java.lang.System.exit;
+
 /**
  * Provides forward search for Evince: sync Evince with the source.
  */
@@ -33,7 +40,7 @@ public class ForwardSearch {
         String workDir = System.getProperty("user.dir");
         String pdfFile = workDir + "/main.pdf";
         String texFile = workDir + "/main.tex";
-        int lineNumber = 11;
+        int lineNumber = 5;
 
 
         DBusConnection connection = null;
@@ -70,7 +77,7 @@ public class ForwardSearch {
 
             // Introspect the Window object to see method signatures
             Introspectable introspectableWindow = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Introspectable.class);
-            System.out.println(introspectableWindow.Introspect());
+//            System.out.println(introspectableWindow.Introspect());
 
             // Now we do the same but for the SyncView method
             // todo no reply. Check:
@@ -80,11 +87,26 @@ public class ForwardSearch {
             // Struct is like example in docs
             // Parameter types correspond exactly to xml, translated according to table in docs
             // But: changing them to something insensible results in the same error
-            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
+//            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
 
             // We have created our own tuple TwoTuple in order to pass a tuple/struct to SyncView
-            Struct lineTuple = new TwoTuple(lineNumber, 1);
-            window.SyncView(texFile, lineTuple, new UInt32(0));
+//            Struct lineTuple = new TwoTuple(lineNumber, 1);
+//            window.SyncView(texFile, lineTuple, new UInt32(0));
+
+            // Since the above does not work, with a DBusExecutionException
+            // org.freedesktop.dbus.errors.NoReply: No reply within specified time
+            // we will just the terminal command:
+//            Runtime.getRuntime().exec("gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView \"" + texFile + "\" \"(" + lineNumber + ", 1)\" \"0\"");
+            // gdbus call --session --dest :1.89 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "/home/thomas/GitRepos/evince_dbus/main.tex" "(5, 1)" "0"
+            String[] args = new String[]{"gdbus", "call", "--session", "--dest", dbusName, "--object-path", "/org/gnome/evince/window/0", "--method", "org.gnome.evince.Window.SyncView", "\"" + texFile + "\"", "\"(" + lineNumber + ", 1)\"", "\"0\""};
+            Process proc = new ProcessBuilder(args).start();
+            System.out.println(getStringFromInputStream(proc.getInputStream()));
+
+            System.out.println("--- attempt 2: ---");
+
+            args = new String[]{"qdbus", dbusName, "/org/gnome/evince/Window/0"};
+            proc = new ProcessBuilder(args).start();
+            System.out.println(getStringFromInputStream(proc.getInputStream()));
 
         } catch (DBusException e) {
             System.out.println("Caught DBusException: ");
@@ -92,8 +114,42 @@ public class ForwardSearch {
         } catch (DBusExecutionException e) {
             System.out.println("Caught DBusExecutionException: " + e.getMessage());
             e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("Caught exception when executing SyncView via terminal: " + e.getMessage());
+            e.printStackTrace();
         }
 
+        exit(0);
+    }
+
+    // convert InputStream to String
+    // https://www.mkyong.com/java/how-to-convert-inputstream-to-string-in-java/
+    private static String getStringFromInputStream(InputStream is) {
+
+        BufferedReader br = null;
+        StringBuilder sb = new StringBuilder();
+
+        String line;
+        try {
+
+            br = new BufferedReader(new InputStreamReader(is));
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return sb.toString();
 
     }
 
@@ -109,3 +165,4 @@ public class ForwardSearch {
 //            new SignalHandler());
 //    This sets up a signal handler for the given signal type. SignalHandler.handle will be called in a new thread with an instance of TestSignalInterface.TestSignal when that signal is recieved.
 }
+
