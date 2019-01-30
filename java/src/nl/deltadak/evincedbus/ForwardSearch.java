@@ -96,17 +96,29 @@ public class ForwardSearch {
             // Since the above does not work, with a DBusExecutionException
             // org.freedesktop.dbus.errors.NoReply: No reply within specified time
             // we will just the terminal command:
-//            Runtime.getRuntime().exec("gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView \"" + texFile + "\" \"(" + lineNumber + ", 1)\" \"0\"");
+            Runtime.getRuntime().exec("gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView " + texFile + " '(" + lineNumber + ", 1)' 0");
+
+
+            Process result = Runtime.getRuntime().exec("qdbus :1.132 /org/gnome/evince/Window/0 ");
+            System.out.println(getStringFromInputStream(result.getInputStream()));
+
+            System.out.println("--------------\n");
+
+            result = Runtime.getRuntime().exec("gdbus call --session --dest :1.132 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView /home/thomas/GitRepos/evince_dbus/main.tex '(5, 1)' 0");
+            System.out.println(getStringFromInputStream(result.getInputStream()));
+
+
+
             // gdbus call --session --dest :1.89 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "/home/thomas/GitRepos/evince_dbus/main.tex" "(5, 1)" "0"
-            String[] args = new String[]{"gdbus", "call", "--session", "--dest", dbusName, "--object-path", "/org/gnome/evince/window/0", "--method", "org.gnome.evince.Window.SyncView", "\"" + texFile + "\"", "\"(" + lineNumber + ", 1)\"", "\"0\""};
-            Process proc = new ProcessBuilder(args).start();
-            System.out.println(getStringFromInputStream(proc.getInputStream()));
+//            String[] args = new String[]{"gdbus", "call", "--session", "--dest", dbusName, "--object-path", "/org/gnome/evince/window/0", "--method", "org.gnome.evince.Window.SyncView", texFile, "'(" + lineNumber + ", 1)'", "0"};
+//            Process proc = new ProcessBuilder(args).start();
+//            System.out.println(getStringFromInputStream(proc.getInputStream()));
 
-            System.out.println("--- attempt 2: ---");
-
-            args = new String[]{"qdbus", dbusName, "/org/gnome/evince/Window/0"};
-            proc = new ProcessBuilder(args).start();
-            System.out.println(getStringFromInputStream(proc.getInputStream()));
+//            System.out.println("--- attempt 2: ---");
+//
+//            args = new String[]{"qdbus", dbusName, "/org/gnome/evince/Window/0"};
+//            proc = new ProcessBuilder(args).start();
+//            System.out.println(getStringFromInputStream(proc.getInputStream()));
 
         } catch (DBusException e) {
             System.out.println("Caught DBusException: ");
