@@ -67,7 +67,6 @@ public class ForwardSearch {
             System.out.println("Owner: " + dbusName);
 
 
-
             // todo call methods asynchronously
             // Now we have the evince daemon object, we want to call a method on it.
             // We want to do this asynchronously so we don't have to wait for a reply.
@@ -79,46 +78,24 @@ public class ForwardSearch {
             Introspectable introspectableWindow = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Introspectable.class);
 //            System.out.println(introspectableWindow.Introspect());
 
-            // Now we do the same but for the SyncView method
-            // todo no reply. Check:
+            String command = "gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView " + texFile + " '(" + lineNumber + ", 1)' 0";
+            Runtime.getRuntime().exec(new String[] { "bash", "-c", command});
+
+
+            // For the record, failed attempt at executing SyncView via the Java D-Bus bindings:
+
+            // Result: NoReply exception. But we checked:
             // dbusName is right name for introspection, the org.gnome.evince.Window doesn't help here and fails with introspection
             // the object path is right for introspectino, other path without 0 doesn't work
             // Interface name org.gnome.evince.Window is provided by the Window.class
             // Struct is like example in docs
             // Parameter types correspond exactly to xml, translated according to table in docs
             // But: changing them to something insensible results in the same error
-//            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
+            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
 
             // We have created our own tuple TwoTuple in order to pass a tuple/struct to SyncView
-//            Struct lineTuple = new TwoTuple(lineNumber, 1);
-//            window.SyncView(texFile, lineTuple, new UInt32(0));
-
-            // Since the above does not work, with a DBusExecutionException
-            // org.freedesktop.dbus.errors.NoReply: No reply within specified time
-            // we will just the terminal command:
-            Runtime.getRuntime().exec("gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView " + texFile + " '(" + lineNumber + ", 1)' 0");
-
-
-            Process result = Runtime.getRuntime().exec("qdbus :1.132 /org/gnome/evince/Window/0 ");
-            System.out.println(getStringFromInputStream(result.getInputStream()));
-
-            System.out.println("--------------\n");
-
-            result = Runtime.getRuntime().exec("gdbus call --session --dest :1.132 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView /home/thomas/GitRepos/evince_dbus/main.tex '(5, 1)' 0");
-            System.out.println(getStringFromInputStream(result.getInputStream()));
-
-
-
-            // gdbus call --session --dest :1.89 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "/home/thomas/GitRepos/evince_dbus/main.tex" "(5, 1)" "0"
-//            String[] args = new String[]{"gdbus", "call", "--session", "--dest", dbusName, "--object-path", "/org/gnome/evince/window/0", "--method", "org.gnome.evince.Window.SyncView", texFile, "'(" + lineNumber + ", 1)'", "0"};
-//            Process proc = new ProcessBuilder(args).start();
-//            System.out.println(getStringFromInputStream(proc.getInputStream()));
-
-//            System.out.println("--- attempt 2: ---");
-//
-//            args = new String[]{"qdbus", dbusName, "/org/gnome/evince/Window/0"};
-//            proc = new ProcessBuilder(args).start();
-//            System.out.println(getStringFromInputStream(proc.getInputStream()));
+            Struct lineTuple = new TwoTuple(lineNumber, 1);
+            window.SyncView(texFile, lineTuple, new UInt32(0));
 
         } catch (DBusException e) {
             System.out.println("Caught DBusException: ");
@@ -132,37 +109,6 @@ public class ForwardSearch {
         }
 
         exit(0);
-    }
-
-    // convert InputStream to String
-    // https://www.mkyong.com/java/how-to-convert-inputstream-to-string-in-java/
-    private static String getStringFromInputStream(InputStream is) {
-
-        BufferedReader br = null;
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-
-            br = new BufferedReader(new InputStreamReader(is));
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        return sb.toString();
-
     }
 
     /**
