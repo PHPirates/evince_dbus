@@ -1,3 +1,14 @@
+What is in this repo?
+=====================
+
+This repo contains some ready-to-run files which are minimal examples of how to communicate with Evince using D-Bus in order to forward/backward search between ``.tex`` and ``.pdf`` files.
+They exist in Python, Java and Kotlin, in the corresponding folders.
+
+The Python code is based on an existing `Synctex plugin <https://github.com/GNOME/gedit-plugins/blob/master/plugins/synctex/synctex/evince_dbus.py>`_ for Gedit.
+The Java code is based on the Python code and the (very sparse) `documentation <https://dbus.freedesktop.org/doc/dbus-java/dbus-java>`_ for the Java D-Bus bindings.
+The Kotlin code is essentially a working summary of the Java code, without very lengthy explanations in the code.
+
+
 Python
 ======
 
