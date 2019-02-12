@@ -5,6 +5,7 @@ import subprocess
 import urllib.parse
 
 import dbus.mainloop.glib
+# Requires PyGObject to be installed (Python bindings to GObject based libraries such as GLib)
 from gi.repository import GLib
 
 pdf_file = os.getcwd() + '/' + 'main.pdf'
@@ -48,10 +49,16 @@ try:
     # This has to happen before initializing the dbus
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
 
+    # Initialize the session bus
     bus = dbus.SessionBus()
+
+    # Get the Daemon object
     daemon = bus.get_object('org.gnome.evince.Daemon', '/org/gnome/evince/Daemon')
 
     # Specify which method to call when the document is loaded
+    # on_doc_loaded is the handler function called when the signal org.gnome.evince.Window.DocumentLoaded is received
+    # The sender_keyword is the argument name by which the source of the signal will be given to the handler. See:
+    # https://dbus.freedesktop.org/doc/dbus-python/tutorial.html#getting-more-information-from-a-signal
     bus.add_signal_receiver(on_doc_loaded, signal_name="DocumentLoaded",
                             dbus_interface="org.gnome.evince.Window",
                             sender_keyword='sender')

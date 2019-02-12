@@ -43,7 +43,7 @@ public class ForwardSearch {
         int lineNumber = 5;
 
 
-        DBusConnection connection = null;
+        DBusConnection connection;
         try {
             // Initialize a session bus
             connection = DBusConnection.getConnection(DBusConnection.DBusBusType.SESSION);
@@ -62,9 +62,9 @@ public class ForwardSearch {
             // Daemon is the interface we have declared ourselves, see the org.gnome.evince package
             Daemon daemon = connection.getRemoteObject("org.gnome.evince.Daemon", "/org/gnome/evince/Daemon", Daemon.class);
             // We will find the process owner in order to use it for SyncView later on as busname
-            String dbusName = daemon.FindDocument("file://" + pdfFile, true);
+            String processOwner = daemon.FindDocument("file://" + pdfFile, true);
             // Will be something like :1.155
-            System.out.println("Owner: " + dbusName);
+            System.out.println("Owner: " + processOwner);
 
 
             // todo call methods asynchronously
@@ -75,10 +75,10 @@ public class ForwardSearch {
 //            connection.callWithCallback(introspectable, "FindDocument", callback, pdfFile, true);
 
             // Introspect the Window object to see method signatures
-            Introspectable introspectableWindow = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Introspectable.class);
+            Introspectable introspectableWindow = connection.getRemoteObject(processOwner, "/org/gnome/evince/Window/0", Introspectable.class);
 //            System.out.println(introspectableWindow.Introspect());
 
-            String command = "gdbus call --session --dest " + dbusName + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView " + texFile + " '(" + lineNumber + ", 1)' 0";
+            String command = "gdbus call --session --dest " + processOwner + " --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView " + texFile + " '(" + lineNumber + ", 1)' 0";
             Runtime.getRuntime().exec(new String[] { "bash", "-c", command});
 
 
@@ -91,7 +91,7 @@ public class ForwardSearch {
             // Struct is like example in docs
             // Parameter types correspond exactly to xml, translated according to table in docs
             // But: changing them to something insensible results in the same error
-            Window window = connection.getRemoteObject(dbusName, "/org/gnome/evince/Window/0", Window.class);
+            Window window = connection.getRemoteObject(processOwner, "/org/gnome/evince/Window/0", Window.class);
 
             // We have created our own tuple TwoTuple in order to pass a tuple/struct to SyncView
             Struct lineTuple = new TwoTuple(lineNumber, 1);

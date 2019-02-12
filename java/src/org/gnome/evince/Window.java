@@ -2,7 +2,9 @@ package org.gnome.evince;
 
 
 import org.freedesktop.dbus.Struct;
+import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.interfaces.DBusInterface;
+import org.freedesktop.dbus.messages.DBusSignal;
 import org.freedesktop.dbus.types.UInt32;
 
 /**
@@ -22,4 +24,11 @@ public interface Window extends DBusInterface {
      * @param timestamp Seems to work when this is set to 1.
      */
     void SyncView(String sourceFile, Struct sourcePoint, UInt32 timestamp);
+
+    @SuppressWarnings("JavaDoc") // todo
+    public class DocumentLoaded extends DBusSignal {
+        public DocumentLoaded(String source, String path, String iface, String member, String sig, Object... args) throws DBusException {
+            super(source, path, iface, member, sig, args);
+        }
+    }
 }

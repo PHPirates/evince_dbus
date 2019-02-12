@@ -98,12 +98,18 @@ Regarding Java, in order to find out how to represent types in Java the dbus-jav
 In the example, 's' is a String, 'u' an unsigned 32-bit integer which can be represented in Java by a dbus-java type UInt32, and '(ii)' is a block of values containing two ints (in D-Bus they are signed two's complement 32-bit integers). The brackets indicated they appear together in a struct, which can be represented in Python with a tuple (apparently) and in Java with something that extends Struct.
 
 Executing methods via the terminal
---------------------------------------
+----------------------------------
 
 You can also execute methods directly via a terminal.
-In this example, when you know the evince process owner (e.g. ``:1.195``) which you get by executing FindDocument (see Python or Java examples) then you can execute SyncView by running::
+In this example, when you know the evince process owner (e.g. ``:1.195``) which you get by executing FindDocument (see Python or Java examples) then you can execute SyncView by running in the location of your tex file (where 11 is the line number)::
 
     gdbus call --session --dest :1.195 --object-path /org/gnome/evince/Window/0 --method org.gnome.evince.Window.SyncView "main.tex" "(11, 1)" "0"
 
 In this case ``:1.195`` is the object name, like ``org.gnome.evince.Daemon`` was for FindDocument. You can view all names by executing ``qdbus`` and available object paths with ``qdbus :1.195`` where ``:1.195`` is an object name.
 You can also view available methods with ``qdbus :1.195 /org/gnome/evince/Window/0``.
+
+So theoretically,::
+
+    gdbus call --session --dest org.gnome.evince.Daemon --object-path /org/gnome/evince/Daemon --method org.gnome.evince.FindDocument "main.pdf" "true"
+
+should work to find the process owner name, but this results in a DBus.Error.UnknownMethod
