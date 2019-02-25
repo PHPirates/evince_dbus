@@ -7,6 +7,10 @@ import org.freedesktop.dbus.messages.DBusSignal;
 public class OnDocLoadedSignalHandler<OnDocLoadedSignal> implements DBusSigHandler {
     @Override
     public void handle(DBusSignal signal) {
-        System.out.println("Handling call.");
+        System.out.println("Handling call of signal " + signal);
+    }
+
+    public void handle(String uri, Object... args) {
+        System.out.println("Handling call of uri " + uri);
     }
 }

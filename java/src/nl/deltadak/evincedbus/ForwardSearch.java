@@ -71,7 +71,7 @@ public class ForwardSearch {
             // Now we have the evince daemon object, we want to call a method on it.
             // We want to do this asynchronously so we don't have to wait for a reply.
             // Execute FindDocument via daemon interface
-//            CallbackHandler<Object> callback = new CallBackExample();
+//            CallbackHandler<Object> callback = new FindDocumentCallback();
 //            connection.callWithCallback(introspectable, "FindDocument", callback, pdfFile, true);
 
             // Introspect the Window object to see method signatures

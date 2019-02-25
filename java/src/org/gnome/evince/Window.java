@@ -27,8 +27,13 @@ public interface Window extends DBusInterface {
 
     @SuppressWarnings("JavaDoc") // todo
     public class DocumentLoaded extends DBusSignal {
-        public DocumentLoaded(String source, String path, String iface, String member, String sig, Object... args) throws DBusException {
-            super(source, path, iface, member, sig, args);
+//        public DocumentLoaded(String source, String path, String iface, String member, String sig, Object... args) throws DBusException {
+//            super(source, path, iface, member, sig, args);
+//        }
+
+        public DocumentLoaded(String uri) throws DBusException {
+            super(uri);
+            System.out.println("Handling callback! uri: " + uri);
         }
     }
 }
