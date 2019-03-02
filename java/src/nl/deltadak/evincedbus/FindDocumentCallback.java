@@ -1,9 +1,11 @@
 package nl.deltadak.evincedbus;
 
+import org.freedesktop.SyncSourceSignalHandler;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.interfaces.CallbackHandler;
+import org.freedesktop.dbus.interfaces.DBusSigHandler;
 import org.gnome.evince.Window;
 
 /**
@@ -27,7 +29,16 @@ public class FindDocumentCallback implements CallbackHandler {
             Window window = connection.getRemoteObject((String)processOwner, "/org/gnome/evince/Window/0", Window.class);
 
             //     window.connect_to_signal("SyncSource", on_sync_source)
-            connection.addSigHandler();
+            System.out.println("Connecting to the SyncSource signal...");
+            // todo Exception while running signal handler DBusException: Error deserializing message: number of parameters didn't match receiving signature
+            DBusSigHandler<Window.SyncSource> handler = new DBusSigHandler<Window.SyncSource>() {
+                @Override
+                public void handle(Window.SyncSource signal) {
+                    System.out.println("Handling call of signal " + signal);
+                }
+            };
+
+            connection.addSigHandler(Window.SyncSource.class, window, handler);
 
 //            connection.addSigHandler(
 //                    Window.DocumentLoaded.class,

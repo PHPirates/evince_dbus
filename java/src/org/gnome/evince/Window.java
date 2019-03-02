@@ -13,6 +13,7 @@ import org.freedesktop.dbus.types.UInt32;
 @SuppressWarnings("NewMethodNamingConvention")
 public interface Window extends DBusInterface {
 
+    // Declare a method on the DBus
     /**
      * Highlight a certain line in a pdf file.
      * I have not been able to find any documentation about this method.
@@ -24,6 +25,19 @@ public interface Window extends DBusInterface {
      * @param timestamp Seems to work when this is set to 1.
      */
     void SyncView(String sourceFile, Struct sourcePoint, UInt32 timestamp);
+
+    public class SyncSource extends DBusSignal {
+        public SyncSource(String objectpath, String inputFile, Struct sourceLink, UInt32 timestamp) throws DBusException {
+            super(objectpath, inputFile, sourceLink, timestamp);
+            System.out.println("SyncSource constructor");
+        }
+
+        // Declaration of the signal, see https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase4.html#x17-170004
+        // todo why are the output parameters of the signal input parameters here?
+        public void SyncSource(String path, String inputFile, Struct sourceLink, UInt32 timestamp) {
+            System.out.println("SyncSource handler");
+        }
+    }
 
     @SuppressWarnings("JavaDoc") // todo
     public class DocumentLoaded extends DBusSignal {
