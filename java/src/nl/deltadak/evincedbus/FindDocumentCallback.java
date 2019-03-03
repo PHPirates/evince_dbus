@@ -1,11 +1,15 @@
 package nl.deltadak.evincedbus;
 
 import org.freedesktop.SyncSourceSignalHandler;
+import org.freedesktop.dbus.Struct;
 import org.freedesktop.dbus.connections.impl.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.freedesktop.dbus.handlers.AbstractPropertiesChangedHandler;
 import org.freedesktop.dbus.interfaces.CallbackHandler;
 import org.freedesktop.dbus.interfaces.DBusSigHandler;
+import org.freedesktop.dbus.interfaces.Properties;
+import org.freedesktop.dbus.types.UInt32;
 import org.gnome.evince.Window;
 
 /**
@@ -34,20 +38,19 @@ public class FindDocumentCallback implements CallbackHandler {
             DBusSigHandler<Window.SyncSource> handler = new DBusSigHandler<Window.SyncSource>() {
                 @Override
                 public void handle(Window.SyncSource signal) {
-                    System.out.println("Handling call of signal " + signal);
+                    System.out.println("Handling call of signal " + signal + " from file " + signal.inputFile);
+
+                }
+
+                public void handle(String inputFile, Struct sourceLink, UInt32 timestamp) {
+
                 }
             };
 
+            // Above exception happens with any of these:
             connection.addSigHandler(Window.SyncSource.class, window, handler);
-
-//            connection.addSigHandler(
-//                    Window.DocumentLoaded.class,
-//                    new OnDocLoadedSignalHandler<Window.DocumentLoaded>());
-
-//            connection.addSigHandler(
-//                    OnDocLoadedSignalInterface.OnDocLoadedSignal.class,
-//                    daemon
-//                    );
+//            connection.addSigHandler(Window.SyncSource.class, handler);
+//            connection.addSigHandler(Window.SyncSource.class, (String)processOwner, handler);
 
         } catch (DBusException e) {
             e.printStackTrace();

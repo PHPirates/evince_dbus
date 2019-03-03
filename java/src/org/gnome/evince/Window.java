@@ -27,27 +27,15 @@ public interface Window extends DBusInterface {
     void SyncView(String sourceFile, Struct sourcePoint, UInt32 timestamp);
 
     public class SyncSource extends DBusSignal {
-        public SyncSource(String objectpath, String inputFile, Struct sourceLink, UInt32 timestamp) throws DBusException {
-            super(objectpath, inputFile, sourceLink, timestamp);
-            System.out.println("SyncSource constructor");
-        }
+        public String inputFile;
 
         // Declaration of the signal, see https://dbus.freedesktop.org/doc/dbus-java/dbus-java/dbus-javase4.html#x17-170004
         // todo why are the output parameters of the signal input parameters here?
-        public void SyncSource(String path, String inputFile, Struct sourceLink, UInt32 timestamp) {
-            System.out.println("SyncSource handler");
+        public SyncSource(String objectPath, String inputFile, Struct sourceLink, UInt32 timestamp) throws DBusException {
+            super(objectPath, inputFile, sourceLink, timestamp);
+            System.out.println("SyncSource constructor");
+            this.inputFile = inputFile;
         }
-    }
 
-    @SuppressWarnings("JavaDoc") // todo
-    public class DocumentLoaded extends DBusSignal {
-//        public DocumentLoaded(String source, String path, String iface, String member, String sig, Object... args) throws DBusException {
-//            super(source, path, iface, member, sig, args);
-//        }
-
-        public DocumentLoaded(String uri) throws DBusException {
-            super(uri);
-            System.out.println("Handling callback! uri: " + uri);
-        }
     }
 }

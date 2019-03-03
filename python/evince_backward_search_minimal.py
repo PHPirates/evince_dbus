@@ -39,16 +39,6 @@ def handle_find_document_error(error):
     print("Handling error, FindDocument DBus call has failed:")
     print(error)
 
-
-def register_syncsource_after_document_load(uri, **keyargs):
-    """ Called when the document is opened in Evince. Will register the SyncSource signal handler, for the actual backward search. """
-    # Get process owner
-    process_owner = keyargs['sender']
-
-    # Register SyncSource signal handler
-    register_syncsource_by_process_owner(process_owner)
-
-
 try:
     # This has to happen before initializing the dbus
     dbus.mainloop.glib.DBusGMainLoop(set_as_default=True)
@@ -58,16 +48,6 @@ try:
 
     # Get the Daemon object
     daemon = bus.get_object('org.gnome.evince.Daemon', '/org/gnome/evince/Daemon')
-
-    # Specify which method to call when the document is loaded
-    # on_doc_loaded is the handler function called when the signal org.gnome.evince.Window.DocumentLoaded is received
-    # The sender_keyword is the argument name by which the source of the signal will be given to the handler. See:
-    # https://dbus.freedesktop.org/doc/dbus-python/tutorial.html#getting-more-information-from-a-signal
-    # The following line will register the SyncSource signal
-    # todo this is unnecessary as it does the same as the next FindDocument line, both calling register_syncsource_by_process_owner
-    # bus.add_signal_receiver(register_syncsource_after_document_load, signal_name="DocumentLoaded",
-    #                         dbus_interface="org.gnome.evince.Window",
-    #                         sender_keyword='sender')
 
     # Specify which method is to be used to find the document
     # When the document is loaded, register the SyncSource signal

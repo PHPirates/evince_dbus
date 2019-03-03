@@ -113,3 +113,8 @@ So theoretically,::
     gdbus call --session --dest org.gnome.evince.Daemon --object-path /org/gnome/evince/Daemon --method org.gnome.evince.FindDocument "main.pdf" "true"
 
 should work to find the process owner name, but this results in a DBus.Error.UnknownMethod
+
+Debugging signals
+-----------------
+
+You can view all signals going over the DBus by executing ``dbus-monitor --session``, also exceptions will be shown and the contents of the signal (which you could also view by placing a breakpoint at the point in the code where the DBusException is thrown).
