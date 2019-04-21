@@ -20,6 +20,8 @@ public class FindDocumentCallback implements CallbackHandler {
     /**
      * Given the process owner of a document, register to the SyncSource signal with a callback which will be called when backward search command is executed in Evince.
      *
+     * NOTE This is a failed attempt, the exception was not solved.
+     *
      * @param processOwner Process owner.
      */
     @Override
