@@ -25,7 +25,7 @@ public class BackwardSearch {
             InputStream stdin = process.getInputStream();
             InputStreamReader inputReader = new InputStreamReader(stdin);
             BufferedReader bufferedReader = new BufferedReader(inputReader);
-            String line = null;
+            String line;
             while ((line = bufferedReader.readLine()) != null) {
                 // Check if a SyncSource signal appeared from Evince
                 if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
@@ -51,7 +51,6 @@ public class BackwardSearch {
                     // Get the location represented by the struct
                     String lineNumberLine = bufferedReader.readLine();
                     String lineNumberString = lineNumberLine.substring(lineNumberLine.indexOf("int32") + 6, lineNumberLine.indexOf("int32") + 7);
-                    // todo error handling
                     int lineNumber = Integer.parseInt(lineNumberString);
 
                     // The second value seems to be unused, so we can sync IntelliJ now
@@ -88,7 +87,10 @@ public class BackwardSearch {
      * @param args Not used.
      */
     public static void main(String[] args) {
-        new BackwardSearch().startListening();
+
+        // Because the listener has to keep reading ouput, we start it in a different thread
+        Thread thread = new Thread(() -> new BackwardSearch().startListening());
+        thread.start();
 
 //        new BackwardSearch().syncSource("/home/thomas/GitRepos/evince_dbus/main.tex",  9);
     }
