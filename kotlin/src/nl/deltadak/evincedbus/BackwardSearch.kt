@@ -60,7 +60,7 @@ class BackwardSearch {
      */
     fun syncSource(filePath: String, lineNumber: Int) {
         // Command to execute for backward search, where %f is the tex file to load and %l is the line number
-        val command = "/home/thomas/.local/share/JetBrains/Toolbox/apps/IDEA-U/ch-0/191.6707.61/bin/idea.sh --line $lineNumber $filePath"
+        val command = "/home/thomas/.local/share/JetBrains/Toolbox/apps/IDEA-U/ch-0/191.6707.61/bin/idea.sh --line $lineNumber \"$filePath\""
 
         try {
             Runtime.getRuntime().exec(command)
