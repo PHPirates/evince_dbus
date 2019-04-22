@@ -1,5 +1,8 @@
 package nl.deltadak.evincedbus
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -72,5 +75,14 @@ class BackwardSearch {
  * Execute the backward search example.
  */
 fun main() {
-    BackwardSearch().startListening()
+    // Run in a coroutine so the main thread can continue
+    GlobalScope.launch {
+        BackwardSearch().startListening()
+    }
+
+    println("Continuing...")
+    // Assume the program runs on indefinitely (so the program doesn't finish, which would kill the listening coroutine)
+    runBlocking {
+        while (true) {}
+    }
 }
