@@ -72,7 +72,7 @@ class BackwardSearch {
 }
 
 /**
- * Execute the backward search example.
+ * Execute the backward search example. Open a pdf in Evince which was compiled with synctex, and ctrl+click somewhere. It should open the tex file in the configured IDE.
  */
 fun main() {
     // Run in a coroutine so the main thread can continue
