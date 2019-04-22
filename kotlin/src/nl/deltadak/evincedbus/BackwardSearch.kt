@@ -25,7 +25,7 @@ class BackwardSearch {
 
             while (line != null) {
                 // Check if a SyncSource signal appeared from Evince and if so, read the contents
-                if (line!!.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
+                if (line.contains("interface=org.gnome.evince.Window; member=SyncSource")) {
                     // Get the value between quotes
                     val filenameLine = bufferedReader.readLine()
                     var filename = filenameLine.substring(filenameLine.indexOf("\"") + 1, filenameLine.lastIndexOf("\""))
@@ -43,7 +43,7 @@ class BackwardSearch {
                     syncSource(filename, lineNumber)
                 }
 
-                line = bufferedReader.readLine();
+                line = bufferedReader.readLine()
             }
 
         } catch (e: IOException) {
